@@ -2,12 +2,14 @@ import logging
 import subprocess
 from pdb import set_trace
 
+from config import LOG_LEVEL
+
 
 def get_logger(name):
     """
     Return pre-configured logger
     """
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=LOG_LEVEL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(name)
     return logger
 
