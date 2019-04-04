@@ -14,13 +14,26 @@ from config import DATA_PATH
 log = get_logger("analyze")
 
 
-def _get_src_dst(pkt):
+def get_src_dst(cap):
     """
-    get the peers involved in a flow based on a sample packet
+    return the peers of a flow a
+    :param cap: flow PCAP file parsed as FileCapture
+    :return: tuple of two strings
     """
+
+    if not isinstance(cap, psh.FileCapture):
+        raise Exception("Illegal argument type: %s" % type(cap))
+
+    pkt = get_base_pkt(cap)
+
     if hasattr(pkt, "ip"):
         if hasattr(pkt, "tcp"):
-            return pkt.ip.dst_host + ":" + pkt.tcp.dstport, pkt.ip.src_host + ":" + pkt.tcp.srcport
+            first = pkt.ip.dst_host + ":" + pkt.tcp.dstport
+            second = pkt.ip.src_host + ":" + pkt.tcp.srcport
+            if pkt.tcp.dstport == 443 or pkt.tcp.dstport == 80:
+                return first, second
+            else:
+                return second, first
         elif hasattr(pkt, "udp"):
             return pkt.ip.dst_host + ":" + pkt.udp.dstport, pkt.ip.src_host + ":" + pkt.udp.srcport
         else:
@@ -29,6 +42,13 @@ def _get_src_dst(pkt):
         return pkt.eth.dst, pkt.eth.src
     else:
         return "N/A", "N/A"
+
+
+def get_base_pkt(cap):
+    for pkt in cap:
+        if hasattr(pkt, 'ip') and hasattr(pkt.ip, 'tcp'):
+            return pkt
+    return cap[0]
 
 
 def analyze_flow(pcap):
@@ -53,7 +73,7 @@ def analyze_flow(pcap):
                 has_https = True
         count += 1
 
-    h1, h2 = _get_src_dst(cap[0])
+    h1, h2 = get_src_dst(cap)
 
     res = {
         "http2": has_http2,
@@ -78,7 +98,7 @@ def _analyze_map(pcap):
 def analyze_flow_dir(pcaps_dir, out_file=None, threads=8):
     """
     :param threads: Num threads to use
-    :param pcaps_dir: Flow-separated PCAPs file-path
+    :param pcaps_dir: Flow-separated PCAPs file-path -> FilePath
     :param out_file:
     :return: dict holding info
     """

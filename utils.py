@@ -39,3 +39,11 @@ def bash_live(command):
             break
 
 
+def pick(gen, count):
+    idx = 0
+    if count > 0:
+        for c in gen:
+            idx += 1
+            yield c
+            if idx == count:
+                break

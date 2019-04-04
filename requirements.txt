@@ -1,6 +1,5 @@
 backcall==0.1.0
 decorator==4.4.0
-file-path==0.1rc0
 ipython==7.4.0
 ipython-genutils==0.2.0
 jedi==0.13.3
