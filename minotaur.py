@@ -10,7 +10,7 @@ from pdb import set_trace
 
 from config import DATA_PATH
 from flow import split_flows
-from timeseries import extract_ts
+from timeseries import extract_ts, par_extract_ts
 from utils import get_logger
 from analyze import analyze_flow_dir
 
@@ -87,7 +87,7 @@ def _main_timeseries(args):
     outdir = fp(args.out)
     outdir.ensure()
 
-    extract_ts(indir, outdir)
+    par_extract_ts(indir, outdir)
 
 
 def main(args):
