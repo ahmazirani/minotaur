@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 import time
 
 import datetime
@@ -19,6 +19,7 @@ log = get_logger("minotaur")
 
 def create_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dummy', type=str, help='Dummy')
     parser.add_argument('--split', '-s', type=str, help='PCAP raw input file')
     parser.add_argument('--out', '-o', type=str, help='Output file/directory')
     parser.add_argument('--flows', '-f', type=str, help='Directory holding separated flow PCAPs')
@@ -80,6 +81,7 @@ def _main_analyze_flows(args):
 
 def _main_timeseries(args):
 
+    threads = args.threads
     indir = fp(args.timeseries)
     if not indir.is_dir():
         log.error("No such directory '%s'" % args.timeseries)
@@ -87,12 +89,29 @@ def _main_timeseries(args):
     outdir = fp(args.out)
     outdir.ensure()
 
-    par_extract_ts(indir, outdir)
+    par_extract_ts(indir, outdir, threads=threads)
+
+
+def _dummy(args):
+
+    indir = fp(args.dummy)
+    from pyshark import FileCapture
+
+    for d in indir.ls():
+        with d.open() as f:
+            cap = FileCapture(f)
+            # import pdb
+            # pdb.set_trace()
+            size = sum([int(pkt.captured_length) for pkt in cap])
+            log.info("size=%d", size)
 
 
 def main(args):
 
-    if args.analyze:
+    if args.dummy:
+        _dummy(args)
+
+    elif args.analyze:
         _main_analyze(args)
 
     elif args.analyzeflows:

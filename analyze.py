@@ -28,16 +28,16 @@ def get_src_dst(cap):
 
     if hasattr(pkt, "ip"):
         if hasattr(pkt, "tcp"):
-            first = pkt.ip.dst_host + ":" + pkt.tcp.dstport
-            second = pkt.ip.src_host + ":" + pkt.tcp.srcport
+            first = pkt.ip.dst_host + "#" + pkt.tcp.dstport
+            second = pkt.ip.src_host + "#" + pkt.tcp.srcport
             if pkt.tcp.dstport == 443 or pkt.tcp.dstport == 80:
                 return first, second
             else:
                 return second, first
         elif hasattr(pkt, "udp"):
-            return pkt.ip.dst_host + ":" + pkt.udp.dstport, pkt.ip.src_host + ":" + pkt.udp.srcport
+            return pkt.ip.dst_host + "#" + pkt.udp.dstport, pkt.ip.src_host + "#" + pkt.udp.srcport
         else:
-            return pkt.ip.dst_host, pkt.ip.src_host
+            return pkt.ip.dst_host + "#0", pkt.ip.src_host + "#0"
     elif hasattr(pkt, "eth"):
         return pkt.eth.dst, pkt.eth.src
     else:

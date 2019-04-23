@@ -2,7 +2,7 @@
 import os
 from filepath.filepath import fp
 from os.path import join, dirname, abspath
-from logging import INFO
+from logging import INFO, DEBUG, ERROR
 
 _BASE_PATH = fp(dirname(abspath(__file__)))
 
